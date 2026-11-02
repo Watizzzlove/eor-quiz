@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Учебный чат-бот • ЭОР Ассистент (ИФиМК АлтГПУ)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background: #0e1621;
+      color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .nav-link {
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #334155;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: #ffffff;
+      background: rgba(37, 99, 235, 0.3);
+      border-color: #3b82f6;
+    }
+    .chat-app {
+      width: 100%;
+      max-width: 680px;
+      height: 86vh;
+      background: #17212b;
+      border: 1px solid #242f3d;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    }
+    /* Telegram Header */
+    .chat-header {
+      background: #242f3d;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    .avatar {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .header-info h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .header-info p {
+      font-size: 12px;
+      color: #5288c1;
+    }
+    /* Messages Area */
+    .messages-container {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: radial-gradient(circle at center, #111923 0%, #0e1621 100%);
+    }
+    .msg {
+      max-width: 82%;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      position: relative;
+      word-wrap: break-word;
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .msg.bot {
+      background: #182533;
+      color: #f5f5f5;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .msg.user {
+      background: #2b5278;
+      color: #ffffff;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .msg-time {
+      font-size: 10px;
+      color: #708499;
+      float: right;
+      margin-left: 10px;
+      margin-top: 4px;
+    }
+    /* Buttons in Chat */
+    .buttons-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .btn-action {
+      background: #2b5278;
+      color: #ffffff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+    }
+    .btn-action:hover {
+      background: #366594;
+    }
+    .btn-action:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    /* Input Area */
+    .input-area {
+      background: #17212b;
+      padding: 12px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    .input-field {
+      flex: 1;
+      background: #242f3d;
+      border: 1px solid transparent;
+      padding: 12px 16px;
+      border-radius: 24px;
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: #5288c1;
+    }
+    .btn-send {
+      background: #5288c1;
+      border: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: background 0.15s;
+    }
+    .btn-send:hover {
+      background: #6298d1;
+    }
+    footer {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #708499;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav-bar">
+    <a href="index.html" class="nav-link">🏆 Квиз по курсу</a>
+    <a href="bot.html" class="nav-link active">🤖 Учебный Чат-бот</a>
+    <a href="ar.html" class="nav-link">🕶 3D-модель в AR</a>
+  </div>
+
+  <div class="chat-app">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="avatar">🤖</div>
+      <div class="header-info">
+        <h2>ЭОР Ассистент (ИФиМК)</h2>
+        <p>бот • в сети • АлтГПУ, 2026</p>
+      </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="messages-container" id="messages-container"></div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <input type="text" id="user-input" class="input-field" placeholder="Напишите сообщение..." onkeydown="handleKey(event)">
+      <button class="btn-send" onclick="sendUserMessage()">➤</button>
+    </div>
+  </div>
+
+  <footer>
+    Задание № 8 • Чат-бот сопровождения учебного курса • Магистратура ИФиМК АлтГПУ
+  </footer>
+
+  <script>
+    const FAQ = {
+      "faq_1": {
+        q: "📅 График сдачи и дедлайны",
+        a: "Дедлайн сдачи всех практических заданий текущего модуля — согласно графику в Moodle (ноябрь-декабрь 2026 г.). Работы, сданные вовремя, оцениваются без штрафных баллов."
+      },
+      "faq_2": {
+        q: "📝 Критерии оценивания",
+        a: "Критерии:\n1) Полнота выполнения всех пунктов задания;\n2) Наличие скриншотов и действующих ссылок;\n3) Корректность оформления по ГОСТ 7.0.5–2008;\n4) Практическая применимость в школьной практике."
+      },
+      "faq_3": {
+        q: "📚 Рекомендуемая литература",
+        a: "1. Абрамкин Г.П., Тумбаева Н.В., Чепрунова Ю.В. «Мировые информационные ресурсы» (2020);\n2. Тумбаева Н.В. «Цифровые технологии мультимедийного исторического парка» (2021).\nМатериалы доступны в ЭБС АлтГПУ."
+      },
+      "faq_4": {
+        q: "💬 Консультации преподавателя",
+        a: "Индивидуальные консультации проводятся еженедельно согласно расписанию кафедры в ИКОП «Сферум» или через личные сообщения в системе Moodle АлтГПУ."
+      },
+      "faq_5": {
+        q: "📁 Форматы файлов в Moodle",
+        a: "Допустимые форматы: .docx, .pptx, .pdf, .png. При превышении лимита размера файла загрузите материал на Яндекс.Диск или Облако Mail.ru и укажите ссылку в окне ответа."
+      }
+    };
+
+    const QUESTIONS = [
+      {
+        q: "Задание 1/10: Как расшифровывается аббревиатура ФГИС в названии платформы «Моя школа»?",
+        options: [
+          "Федеральная группа инновационных систем",
+          "Федеральная государственная информационная система",
+          "Федеральный городской интернет-сервис"
+        ],
+        correct: 1,
+        expl: "ФГИС — Федеральная государственная информационная система."
+      },
+      {
+        q: "Задание 2/10: Какая платформа представляет собой защищенный учебный профиль в VK Мессенджере?",
+        options: [
+          "РЭШ",
+          "Яндекс.Учебник",
+          "Сферум"
+        ],
+        correct: 2,
+        expl: "Сферум интегрирован в VK Мессенджер как безопасная академическая среда."
+      },
+      {
+        q: "Задание 3/10: Какая платформа генерирует 50+ вариаций одного задания по технологии «ГЕНЕЗИС»?",
+        options: [
+          "ЯКласс",
+          "Учи.ру",
+          "Stepik"
+        ],
+        correct: 0,
+        expl: "На ЯКласс работает алгоритм уникализации заданий «ГЕНЕЗИС»."
+      },
+      {
+        q: "Задание 4/10: На каком портале размещен открытый банк заданий ОГЭ/ЕГЭ и демоверсии КИМ?",
+        options: [
+          "Грамота.ру",
+          "Дидактор",
+          "ФИПИ"
+        ],
+        correct: 2,
+        expl: "ФИПИ (fipi.ru) — официальный государственный разработчик КИМ."
+      },
+      {
+        q: "Задание 5/10: Как называется технология наложения цифровых 3D-объектов на физический мир через камеру?",
+        options: [
+          "Дополненная реальность (AR)",
+          "Виртуальная реальность (VR)",
+          "Криптография"
+        ],
+        correct: 0,
+        expl: "Дополненная реальность (AR) совмещает физический и виртуальный слои."
+      },
+      {
+        q: "Задание 6/10: Главный национальный справочно-информационный интернет-портал по нормам и словарям русского языка?",
+        options: [
+          "КиберЛенинка",
+          "Грамота.ру",
+          "Культура.РФ"
+        ],
+        correct: 1,
+        expl: "Портал «Грамота.ру» (gramota.ru) — ведущий академический справочник."
+      },
+      {
+        q: "Задание 7/10: Какой популярный бесплатный онлайн-сервис от Autodesk используется для школьного 3D-моделирования?",
+        options: [
+          "Tinkercad",
+          "Paint 3D",
+          "Photoshop"
+        ],
+        correct: 0,
+        expl: "Tinkercad (tinkercad.com) — облачный блочный 3D-редактор."
+      },
+      {
+        q: "Задание 8/10: Как называется соревновательная образовательная викторина-тест с элементами геймификации?",
+        options: [
+          "Форум",
+          "Глоссарий",
+          "Квиз (Quiz)"
+        ],
+        correct: 2,
+        expl: "Квиз — интерактивная командная или индивидуальная викторина."
+      },
+      {
+        q: "Задание 9/10: Модель обучения, при которой теория изучается дома по видео, а практика отрабатывается на уроке?",
+        options: [
+          "Традиционная лекция",
+          "Перевернутый класс",
+          "Экстернат"
+        ],
+        correct: 1,
+        expl: "Модель «Перевернутый класс» (Flipped Classroom)."
+      },
+      {
+        q: "Задание 10/10: Какая государственная система авторизации используется для входа во ФГИС «Моя школа»?",
+        options: [
+          "Google Account",
+          "ЕСИА (Госуслуги)",
+          "СНИЛС-ID"
+        ],
+        correct: 1,
+        expl: "Авторизация во ФГИС происходит через ЕСИА (Госуслуги)."
+      }
+    ];
+
+    let quizIndex = -1;
+    let quizScore = 0;
+
+    function getTime() {
+      const now = new Date();
+      return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function appendMessage(sender, text, buttons = []) {
+      const container = document.getElementById('messages-container');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg ${sender}`;
+
+      let formattedText = text.replace(/\n/g, '<br>');
+      msgDiv.innerHTML = `<div>${formattedText}</div><span class="msg-time">${getTime()}</span>`;
+
+      if (buttons.length > 0) {
+        const btnBox = document.createElement('div');
+        btnBox.className = 'buttons-grid';
+        buttons.forEach(btnInfo => {
+          const b = document.createElement('button');
+          b.className = 'btn-action';
+          b.innerText = btnInfo.text;
+          b.onclick = () => {
+            btnBox.querySelectorAll('button').forEach(btn => btn.disabled = true);
+            btnInfo.action();
+          };
+          btnBox.appendChild(b);
+        });
+        msgDiv.appendChild(btnBox);
+      }
+
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function showMainMenu() {
+      quizIndex = -1;
+      quizScore = 0;
+      appendMessage('bot', 
+        "👋 Здравствуйте! Я учебный ассистент курса «Электронные образовательные ресурсы, ДО» (ИФиМК АлтГПУ).\n\n" +
+        "Выберите раздел для работы:\n" +
+        "• 📖 FAQ — ответы на стандартные вопросы по курсу;\n" +
+        "• ✍ Проверка знаний — интерактивный тест из 10 заданий с автоматической оценкой.",
+        [
+          { text: "📖 Вопросы по курсу (FAQ)", action: showFaqMenu },
+          { text: "✍ Начать проверку знаний (10 тестов)", action: startQuiz }
+        ]
+      );
+    }
+
+    function showFaqMenu() {
+      appendMessage('user', "📖 Вопросы по курсу (FAQ)");
+      const btns = Object.keys(FAQ).map(key => ({
+        text: FAQ[key].q,
+        action: () => showFaqAnswer(key)
+      }));
+      btns.push({ text: "🔙 Главное меню", action: showMainMenu });
+      appendMessage('bot', "Выберите интересующий вас вопрос по организации обучения:", btns);
+    }
+
+    function showFaqAnswer(key) {
+      const item = FAQ[key];
+      appendMessage('user', item.q);
+      appendMessage('bot', `*${item.q}*\n\n${item.a}`, [
+        { text: "📖 Другие вопросы FAQ", action: showFaqMenu },
+        { text: "✍ Пройти тест (10 заданий)", action: startQuiz },
+        { text: "🔙 В начало", action: showMainMenu }
+      ]);
+    }
+
+    function startQuiz() {
+      appendMessage('user', "✍ Начать проверку знаний (10 тестов)");
+      quizIndex = 0;
+      quizScore = 0;
+      askNextQuestion();
+    }
+
+    function askNextQuestion() {
+      if (quizIndex >= QUESTIONS.length) {
+        finishQuiz();
+        return;
+      }
+      const item = QUESTIONS[quizIndex];
+      const btns = item.options.map((opt, idx) => ({
+        text: opt,
+        action: () => handleQuizAnswer(idx)
+      }));
+      appendMessage('bot', `📋 *${item.q}*`, btns);
+    }
+
+    function handleQuizAnswer(selectedIdx) {
+      const item = QUESTIONS[quizIndex];
+      appendMessage('user', item.options[selectedIdx]);
+
+      if (selectedIdx === item.correct) {
+        quizScore++;
+        appendMessage('bot', `✅ *Правильно!* ${item.expl}`);
+      } else {
+        const correctText = item.options[item.correct];
+        appendMessage('bot', `❌ *Неверно.* Правильный ответ: ${correctText}.\n💡 ${item.expl}`);
+      }
+
+      quizIndex++;
+      setTimeout(askNextQuestion, 600);
+    }
+
+    function finishQuiz() {
+      let grade = "Отлично (5)";
+      let emoji = "🥇";
+      if (quizScore < 7) {
+        grade = "Удовлетворительно (3)";
+        emoji = "🥉";
+      } else if (quizScore < 9) {
+        grade = "Хорошо (4)";
+        emoji = "🥈";
+      }
+
+      appendMessage('bot', 
+        `🎉 *Тестирование завершено!* ${emoji}\n\n` +
+        `Ваш результат: *${quizScore} из 10* правильных ответов.\n` +
+        `Итоговая оценка: *${grade}*.\n\n` +
+        `Результаты сохранены в ведомости самоконтроля.`,
+        [
+          { text: "🔄 Пройти тест еще раз", action: startQuiz },
+          { text: "📖 Вернуться в FAQ", action: showFaqMenu },
+          { text: "🔙 Главное меню", action: showMainMenu }
+        ]
+      );
+    }
+
+    function sendUserMessage() {
+      const input = document.getElementById('user-input');
+      const val = input.value.trim();
+      if (!val) return;
+      input.value = '';
+
+      appendMessage('user', val);
+
+      // Check keywords
+      const lower = val.toLowerCase();
+      if (lower.includes('дедлайн') || lower.includes('график') || lower.includes('сдач')) {
+        appendMessage('bot', FAQ["faq_1"].a);
+      } else if (lower.includes('критери') || lower.includes('оценк')) {
+        appendMessage('bot', FAQ["faq_2"].a);
+      } else if (lower.includes('книг') || lower.includes('литератур') || lower.includes('учебник')) {
+        appendMessage('bot', FAQ["faq_3"].a);
+      } else if (lower.includes('консульт') || lower.includes('преподавател')) {
+        appendMessage('bot', FAQ["faq_4"].a);
+      } else if (lower.includes('формат') || lower.includes('файл') || lower.includes('moodle')) {
+        appendMessage('bot', FAQ["faq_5"].a);
+      } else if (lower.includes('тест') || lower.includes('проверк')) {
+        startQuiz();
+      } else {
+        appendMessage('bot', "Я вас понял! Воспользуйтесь интерактивным меню ниже для навигации по курсу:", [
+          { text: "📖 Вопросы по курсу (FAQ)", action: showFaqMenu },
+          { text: "✍ Пройти тест (10 заданий)", action: startQuiz }
+        ]);
+      }
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter') {
+        sendUserMessage();
+      }
+    }
+
+    // Init
+    showMainMenu();
+  </script>
+</body>
+</html>
