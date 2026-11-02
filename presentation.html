@@ -6,7 +6,7 @@
   <title>Презентация: Интерактивный анатомический стол «Пирогов» • Технопарк АлтГПУ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --navy: #0f172a;
@@ -56,12 +56,12 @@
     }
     .player-container {
       width: 100%;
-      max-width: 1000px;
+      max-width: 1040px;
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 25px 35px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 25px 40px -5px rgba(0, 0, 0, 0.6);
       display: flex;
       flex-direction: column;
     }
@@ -216,57 +216,80 @@
     .table-custom tr:nth-child(even) td {
       background: #f8fafc;
     }
-    /* Title Slide Specific */
-    .title-slide {
+
+    /* TITLE SLIDE (NEW CLEAN COMPOSITION: NO PLASHKA, LARGE TYPOGRAPHY + BIG 3D TABLE) */
+    .title-slide-clean {
       background: #0f172a;
       color: white;
       display: flex;
-      gap: 20px;
       align-items: center;
       height: 100%;
-      padding: 10px;
+      padding: 20px 24px;
+      gap: 20px;
+      position: relative;
     }
-    .title-left {
-      flex: 1.1;
+    .title-left-clean {
+      flex: 1.15;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      z-index: 2;
     }
-    .title-right {
-      flex: 0.9;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .title-uni {
+    .title-fed-clean {
       font-size: 11px;
       font-weight: 700;
-      color: #60a5fa;
-      letter-spacing: 0.5px;
+      color: #93c5fd;
+      letter-spacing: 1px;
       margin-bottom: 4px;
     }
-    .title-sub {
-      font-size: 10.5px;
-      color: #cbd5e1;
-      margin-bottom: 14px;
-    }
-    .title-main {
-      font-size: 21px;
+    .title-uni-clean {
+      font-size: 14.5px;
       font-weight: 800;
       color: #ffffff;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .title-inst-clean {
+      font-size: 11.5px;
+      color: #cbd5e1;
+      margin-bottom: 18px;
+    }
+    .title-main-clean {
+      font-size: 24px;
+      font-weight: 900;
+      color: #60a5fa;
       line-height: 1.25;
       margin-bottom: 14px;
     }
-    .title-meta {
-      font-size: 11px;
+    .title-task-clean {
+      font-size: 12.5px;
+      color: #e2e8f0;
+      line-height: 1.45;
+      margin-bottom: 18px;
+      border-left: 3px solid #3b82f6;
+      padding-left: 10px;
+    }
+    .title-meta-clean {
+      font-size: 11.5px;
       color: #94a3b8;
-      border-top: 1px solid #334155;
-      padding-top: 12px;
       line-height: 1.5;
+    }
+    .title-right-clean {
+      flex: 0.95;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .title-table-img {
+      max-width: 100%;
+      max-height: 380px;
+      object-fit: contain;
+      filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.7));
+      transition: transform 0.3s ease;
+    }
+    .title-table-img:hover {
+      transform: scale(1.03);
     }
     footer {
       margin-top: 14px;
@@ -307,36 +330,32 @@
 
   <script>
     const slides = [
-      // Slide 1: Title Slide with Photo Preview
+      // Slide 1: Title Slide (No plashka, large typography, large isolated 3D table)
       {
         render: () => `
-          <div class="title-slide">
-            <div class="title-left">
-              <div class="title-uni">АЛТАЙСКИЙ ГОСУДАРСТВЕННЫЙ ПЕДАГОГИЧЕСКИЙ УНИВЕРСИТЕТ</div>
-              <div class="title-sub">Институт филологии и межкультурной коммуникации (ИФиМК) • Магистратура</div>
-              <div class="title-main">Оборудование Технопарка АлтГПУ:<br><span style="color:#60a5fa;">Интерактивный анатомический стол «Пирогов»</span></div>
-              <div class="title-meta">
+          <div class="title-slide-clean">
+            <div class="title-left-clean">
+              <div class="title-fed-clean">МИНИСТЕРСТВО ПРОСВЕЩЕНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ</div>
+              <div class="title-uni-clean">ФГБОУ ВО «АЛТАЙСКИЙ ГОСУДАРСТВЕННЫЙ ПЕДАГОГИЧЕСКИЙ УНИВЕРСИТЕТ»</div>
+              <div class="title-inst-clean">Институт филологии и межкультурной коммуникации (ИФиМК) • Магистратура</div>
+              <div class="title-main-clean">Оборудование Технопарка:<br>Интерактивный анатомический стол «Пирогов»</div>
+              <div class="title-task-clean">
                 Практическое задание № 1: «Интернет-сервисы создания презентаций»<br>
-                Дисциплина: «Электронные образовательные ресурсы, ДО»<br>
-                Преподаватель: к.п.н., доцент Тумбаева Н.В. • Барнаул, 2026
+                Дисциплина: «Электронные образовательные ресурсы, ДО»
+              </div>
+              <div class="title-meta-clean">
+                • Преподаватель: к.п.н., доцент Тумбаева Н.В.<br>
+                • Выполнил(а): студент(ка) магистратуры<br>
+                • г. Барнаул, 2026 г.
               </div>
             </div>
-            <div class="title-right">
-              <img src="photos/table_hero.jpg" alt="Интерактивный стол Пирогов" style="width:100%; height:160px; object-fit:cover; border-radius:8px;">
-              <div style="font-size:13px; font-weight:700; color:#ffffff;">АПК «Пирогов» (Pirogov Anatomy)</div>
-              <div style="font-size:10.5px; color:#cbd5e1; line-height:1.4;">
-                Интерактивный комплекс 3D-визуализации топографической анатомии человека для подготовки будущих учителей.
-              </div>
-              <div style="font-size:9.5px; color:#93c5fd; border-top:1px solid #334155; padding-top:6px;">
-                ✓ 4K Ultra HD Multi-Touch (до 40 касаний)<br>
-                ✓ 4000+ объемных анатомических структур<br>
-                ✓ Разработка СамГМУ / ООО «Развитие» (РФ)
-              </div>
+            <div class="title-right-clean">
+              <img src="photos/table_model2_isolated.png" alt="Интерактивный анатомический стол Пирогов 3D" class="title-table-img">
             </div>
           </div>
         `
       },
-      // Slide 2: Technopark Base with REAL PHOTO of the Table
+      // Slide 2: Technopark Base with Centered Isolated 3D Table (NO black background)
       {
         badge: "МАТЕРИАЛЬНО-ТЕХНИЧЕСКАЯ БАЗА",
         title: "Технопарк АлтГПУ: материальная база и выбор стола «Пирогов»",
@@ -349,11 +368,13 @@
               <div class="bullet-item">• <strong>Выбор оборудования:</strong> для исследования выбран <strong>АПК «Пирогов»</strong> — ключевой программно-аппаратный комплекс биологического профиля.</div>
               <div class="bullet-item">• <strong>Официальный статус:</strong> в номенклатуре материальной базы АлтГПУ зарегистрирован как «Программно-аппаратный комплекс топографического изучения строения организма» (раздел 1 «Генетика», поз. 1.1).</div>
             </div>
-            <div class="photo-container">
-              <img src="photos/table_hero.jpg" class="slide-photo" alt="Интерактивный анатомический стол Пирогов">
-              <div class="photo-caption">
+            <div class="photo-container" style="justify-content:center; align-items:center;">
+              <div style="width:100%; height:230px; display:flex; align-items:center; justify-content:center;">
+                <img src="photos/table_model2_isolated.png" alt="Интерактивный анатомический стол Пирогов 3D" style="max-width:100%; max-height:220px; object-fit:contain; filter:drop-shadow(0 15px 25px rgba(0,0,0,0.15));">
+              </div>
+              <div class="photo-caption" style="width:100%;">
                 <strong>📷 Интерактивный анатомический комплекс «Пирогов»</strong>
-                Ключевое оборудование биологического и генетического профиля Межфакультетского технопарка АлтГПУ. Масштабный сенсорный экран с моторизованным наклоном (0°–90°).
+                Ключевое 3D-оборудование медико-биологического профиля Технопарка АлтГПУ. Большой сенсорный экран с моторизованным приводом наклона (0°–90°).
               </div>
             </div>
           </div>
@@ -647,7 +668,7 @@
       const canvas = document.getElementById('slide-canvas');
       
       if (index === 0) {
-        canvas.style.padding = "20px";
+        canvas.style.padding = "0";
         canvas.innerHTML = s.render();
       } else {
         canvas.style.padding = "28px 36px";
