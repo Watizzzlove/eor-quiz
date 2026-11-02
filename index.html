@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Образовательный квиз: Россия — Моя история и Цифровая культура</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #3b82f6;
+      --accent: #f59e0b;
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --error: #ef4444;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+    header {
+      text-align: center;
+      max-width: 800px;
+      margin-bottom: 24px;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    .container {
+      width: 100%;
+      max-width: 760px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+    /* Progress */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: #334155;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #3b82f6, #60a5fa);
+      transition: width 0.3s ease;
+    }
+    .q-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .score-counter {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .question-title {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 24px;
+      color: #ffffff;
+    }
+    .options-grid {
+      display: grid;
+      grid-gap: 12px;
+      margin-bottom: 24px;
+    }
+    .option-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      color: #e2e8f0;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+    .option-btn:hover:not(:disabled) {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: #3b82f6;
+      transform: translateY(-1px);
+    }
+    .option-btn.correct {
+      background: rgba(16, 185, 129, 0.2) !important;
+      border-color: #10b981 !important;
+      color: #34d399 !important;
+    }
+    .option-btn.wrong {
+      background: rgba(239, 68, 68, 0.2) !important;
+      border-color: #ef4444 !important;
+      color: #f87171 !important;
+    }
+    .explanation-box {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 4px solid var(--primary-light);
+      padding: 16px;
+      border-radius: 0 12px 12px 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #cbd5e1;
+      margin-bottom: 24px;
+      display: none;
+    }
+    .btn-next {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
+      margin-left: auto;
+      transition: opacity 0.2s;
+    }
+    .btn-next:hover {
+      opacity: 0.9;
+    }
+    /* Results Screen */
+    .result-screen {
+      text-align: center;
+      display: none;
+      padding: 20px 0;
+    }
+    .result-trophy {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    .result-score {
+      font-size: 44px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .result-grade {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .result-text {
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-restart {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #475569;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-restart:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">ИФиМК АлтГПУ • ДИСЦИПЛИНА «ЭОР И ДО»</div>
+    <h1>Квиз: «Россия — Моя история: Культура, письменность и цифровые ресурсы»</h1>
+    <p class="subtitle">По материалам научно-методического пособия Н.В. Тумбаевой | АлтГПУ, 2026</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- Quiz Screen -->
+    <div id="quiz-screen">
+      <div class="progress-bar-wrap">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      
+      <div class="q-meta">
+        <span id="q-counter">Вопрос 1 из 10</span>
+        <span class="score-counter" id="score-counter">Баллы: 0</span>
+      </div>
+
+      <div class="question-title" id="question-text">Загрузка вопроса...</div>
+      <div class="options-grid" id="options-container"></div>
+      <div class="explanation-box" id="explanation-box"></div>
+      
+      <div style="display: flex;">
+        <button class="btn-next" id="btn-next" onclick="nextQuestion()">Следующий вопрос →</button>
+      </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="result-screen" id="result-screen">
+      <div class="result-trophy" id="result-trophy">🏆</div>
+      <div class="result-score" id="result-score">10 / 10</div>
+      <div class="result-grade" id="result-grade">Отличный результат!</div>
+      <p class="result-text" id="result-text">
+        Вы продемонстрировали глубокие знания в области отечественной культурной традиции, мультимедийных технологий исторического парка «Россия — Моя история» и федеральных образовательных порталов.
+      </p>
+      <button class="btn-restart" onclick="restartQuiz()">Пройти квиз повторно</button>
+    </div>
+
+  </div>
+
+  <footer>
+    Разработчик: студент(ка) магистратуры ИФиМК АлтГПУ • Преподаватель: доцент, к.п.н. Тумбаева Н.В. • Барнаул, 2026
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        q: "1. В каком году и кем была издана первая точно датированная печатная книга на Руси («Апостол»)?",
+        options: [
+          "1564 год, Иван Фёдоров и Пётр Мстиславец",
+          "1492 год, Симеон Полоцкий",
+          "1605 год, патриарх Никон",
+          "1703 год, Пётр Первый"
+        ],
+        correct: 0,
+        expl: "«Апостол» был отпечатан в Москве на Печатном дворе первопечатником Иваном Фёдоровым и Петром Мстиславцем в 1564 году, что положило начало русскому книгопечатанию."
+      },
+      {
+        q: "2. Какая главная технологическая особенность мультимедийных парков «Россия — Моя история» подчеркивается в пособии Н.В. Тумбаевой?",
+        options: [
+          "Полное отсутствие цифровых копий и акцент только на старых рукописях",
+          "«Живой учебник»: использование сенсорных столов, панорамных проекций и интерактивных квизов",
+          "Использование только аудиогидов без визуального контента",
+          "Ограничение доступа для школьников и студентов"
+        ],
+        correct: 1,
+        expl: "Парк «Россия — Моя история» задуман как мультимедийный «живой учебник», где история оживает с помощью 3D-реконструкций, проекционных куполов и сенсорных киосков."
+      },
+      {
+        q: "3. Какая языковая реформа Петра I 1708–1710 гг. упростила начертание букв и приблизила русскую книгу к европейскому образцу?",
+        options: [
+          "Введение Гражданского шрифта",
+          "Орфографическая реформа Луначарского",
+          "Создание глаголицы",
+          "Запрет использования кириллицы"
+        ],
+        correct: 0,
+        expl: "Петр I лично утвердил Гражданский шрифт в 1708 г., исключив архаичные буквы (омега, пси, ижица и др.) и сделав шрифт более округлым и удобным для чтения светской литературы."
+      },
+      {
+        q: "4. Как согласно ФГОС называется образовательная форма, совмещающая интеллектуальную викторину, командный дух и диагностику знаний?",
+        options: [
+          "Квиз (Quiz)",
+          "Диктант под диктовку",
+          "Коллоквиум",
+          "Экзаменационный билет"
+        ],
+        correct: 0,
+        expl: "Квиз — интерактивная форма формирующего оценивания и геймификации, активно вовлекающая учащихся в предметный диалог."
+      },
+      {
+        q: "5. Какая российская образовательная платформа интегрирована в единый образовательный контур с Госуслугами (ЕСИА)?",
+        options: [
+          "ФГИС «Моя школа»",
+          "Coursera",
+          "Wikipedia",
+          "Duolingo"
+        ],
+        correct: 0,
+        expl: "ФГИС «Моя школа» создана в соответствии с Постановлением Правительства РФ № 1241 с обязательной авторизацией через ЕСИА."
+      },
+      {
+        q: "6. Какой раздел пособия Г.П. Абрамкина, Н.В. Тумбаевой, Ю.В. Чепруновой посвящен образовательным порталам и ресурсам?",
+        options: [
+          "Пункт 4.2 «Информационные образовательные ресурсы»",
+          "Глава 1 «История ЭВМ»",
+          "Раздел 7 «Сетевые протоколы TCP/IP»",
+          "Приложение Б «Таблицы кодировок»"
+        ],
+        correct: 0,
+        expl: "Именно пункт 4.2 пособия «Мировые информационные ресурсы» (АлтГПУ, 2020) систематизирует отечественные и мировые образовательные порталы."
+      },
+      {
+        q: "7. Назовите защищенную российскую платформу для учебных видеоконференций и чатов школьных классов:",
+        options: [
+          "ИКОП «Сферум» (VK Мессенджер)",
+          "Zoom Meetings",
+          "Discord",
+          "Skype"
+        ],
+        correct: 0,
+        expl: "ИКОП «Сферум» предоставляет защищенный образовательный контур, одобренный Минпросвещения РФ."
+      },
+      {
+        q: "8. Какой национальный интернет-портал является главным справочным ресурсом по нормам, словарям и грамматике русского языка?",
+        options: [
+          "Грамота.ру",
+          "Википедия",
+          "Хабр",
+          "Кинопоиск"
+        ],
+        correct: 0,
+        expl: "Портал «Грамота.ру» (gramota.ru) — ведущий национальный цифровой агрегатор словарей и академических консультаций Института русского языка РАН."
+      },
+      {
+        q: "9. Какая технология позволяет учащемуся увидеть 3D-модель музейного экспоната прямо на рабочем столе через камеру смартфона?",
+        options: [
+          "Дополненная реальность (AR / WebAR)",
+          "Оптический телеграф",
+          "Трансляция аналогового ТВ",
+          "Проектор диафильмов"
+        ],
+        correct: 0,
+        expl: "Дополненная реальность (AR) совмещает виртуальные 3D-объекты с реальным пространством без изоляции пользователя."
+      },
+      {
+        q: "10. Какой дидактический эффект достигается при использовании квизов на уроках литературы и русского языка?",
+        options: [
+          "Повышение познавательной мотивации, интерактивная рефлексия и моментальная обратная связь",
+          "Увеличение времени проверки письменных работ учителем",
+          "Пассивное слушание длинных лекций",
+          "Изоляция учеников от коллективного обсуждения"
+        ],
+        correct: 0,
+        expl: "Как показано в исследованиях Н.В. Тумбаевой, интерактивные квизы формируют критическое мышление, поддерживают соревновательный интерес и дают оперативную обратную связь."
+      }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let answered = false;
+
+    function loadQuestion() {
+      answered = false;
+      const q = questions[currentQ];
+      
+      // Progress
+      const progressPercent = ((currentQ) / questions.length) * 100;
+      document.getElementById('progress-fill').style.width = progressPercent + '%';
+      document.getElementById('q-counter').innerText = `Вопрос ${currentQ + 1} из ${questions.length}`;
+      document.getElementById('score-counter').innerText = `Баллы: ${score}`;
+      
+      document.getElementById('question-text').innerText = q.q;
+      
+      const optContainer = document.getElementById('options-container');
+      optContainer.innerHTML = '';
+      
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => selectOption(idx);
+        optContainer.appendChild(btn);
+      });
+
+      document.getElementById('explanation-box').style.display = 'none';
+      document.getElementById('btn-next').style.display = 'none';
+    }
+
+    function selectOption(idx) {
+      if (answered) return;
+      answered = true;
+      
+      const q = questions[currentQ];
+      const buttons = document.querySelectorAll('.option-btn');
+      
+      if (idx === q.correct) {
+        score++;
+        buttons[idx].classList.add('correct');
+      } else {
+        buttons[idx].classList.add('wrong');
+        buttons[q.correct].classList.add('correct');
+      }
+
+      buttons.forEach(b => b.disabled = true);
+      document.getElementById('score-counter').innerText = `Баллы: ${score}`;
+      
+      const explBox = document.getElementById('explanation-box');
+      explBox.innerHTML = `<strong>${idx === q.correct ? '✅ Верно!' : '❌ Неверно.'}</strong> ${q.expl}`;
+      explBox.style.display = 'block';
+
+      document.getElementById('btn-next').style.display = 'inline-block';
+    }
+
+    function nextQuestion() {
+      currentQ++;
+      if (currentQ < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById('quiz-screen').style.display = 'none';
+      const resScreen = document.getElementById('result-screen');
+      resScreen.style.display = 'block';
+
+      document.getElementById('result-score').innerText = `${score} / ${questions.length}`;
+      
+      let grade = '';
+      let trophy = '🏆';
+      let desc = '';
+      
+      if (score >= 9) {
+        grade = 'Оценка: Отлично (5)';
+        trophy = '🥇';
+        desc = 'Великолепный результат! Вы блестяще владеете материалом по истории отечественной культуры, методике мультимедийного парка «Россия — Моя история» и современным цифровым технологиям образования.';
+      } else if (score >= 7) {
+        grade = 'Оценка: Хорошо (4)';
+        trophy = '🥈';
+        desc = 'Хороший результат! Вы уверенно ориентируетесь в ключевых образовательных ресурсах и историко-культурном контексте.';
+      } else {
+        grade = 'Оценка: Удовлетворительно (3)';
+        trophy = '🥉';
+        desc = 'Материал освоен базово. Рекомендуется повторить материалы учебно-методического пособия Н.В. Тумбаевой.';
+      }
+
+      document.getElementById('result-trophy').innerText = trophy;
+      document.getElementById('result-grade').innerText = grade;
+      document.getElementById('result-text').innerText = desc;
+    }
+
+    function restartQuiz() {
+      currentQ = 0;
+      score = 0;
+      document.getElementById('result-screen').style.display = 'none';
+      document.getElementById('quiz-screen').style.display = 'block';
+      loadQuestion();
+    }
+
+    // Start
+    loadQuestion();
+  </script>
+</body>
+</html>
