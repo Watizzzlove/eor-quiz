@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Презентация: Интерактивный анатомический стол «Пирогов» • Технопарк АлтГПУ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f172a;
+      --card-navy: #1a365d;
+      --blue: #2563eb;
+      --blue-light: #eff6ff;
+      --text: #1e293b;
+      --bg: #0f172a;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .nav-link {
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid #334155;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: #ffffff;
+      background: rgba(37, 99, 235, 0.3);
+      border-color: #3b82f6;
+    }
+    .player-container {
+      width: 100%;
+      max-width: 960px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+    }
+    /* Slide Canvas (16:9 ratio) */
+    .slide-canvas {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #f8fafc;
+      color: #0f172a;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 40px;
+    }
+    /* Controls Bar */
+    .controls-bar {
+      background: #0f172a;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #334155;
+    }
+    .btn-ctrl {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #475569;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .btn-ctrl:hover:not(:disabled) {
+      background: #2563eb;
+      border-color: #3b82f6;
+    }
+    .btn-ctrl:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    .slide-counter {
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    /* Slide Layout Classes */
+    .slide-badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      align-self: flex-start;
+    }
+    .slide-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 16px;
+      line-height: 1.3;
+    }
+    .slide-body {
+      flex: 1;
+      display: flex;
+      gap: 20px;
+      overflow-y: auto;
+    }
+    .slide-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a365d;
+      margin-bottom: 8px;
+    }
+    .card-text {
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #334155;
+    }
+    .bullet-item {
+      margin-bottom: 8px;
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: #334155;
+    }
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+    .table-custom th {
+      background: #1a365d;
+      color: white;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    .table-custom td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+    .table-custom tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+    /* Title Slide Specific */
+    .title-slide {
+      background: #0f172a;
+      color: white;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 40px;
+    }
+    .title-uni {
+      font-size: 13px;
+      font-weight: 700;
+      color: #60a5fa;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .title-sub {
+      font-size: 12px;
+      color: #cbd5e1;
+      margin-bottom: 24px;
+    }
+    .title-main {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+      margin-bottom: 24px;
+    }
+    .title-meta {
+      font-size: 13px;
+      color: #94a3b8;
+      border-top: 1px solid #334155;
+      padding-top: 16px;
+      max-width: 600px;
+    }
+    footer {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav-bar">
+    <a href="index.html" class="nav-link">🏆 Квиз по курсу</a>
+    <a href="bot.html" class="nav-link">🤖 Учебный Чат-бот</a>
+    <a href="ar.html" class="nav-link">🕶 3D-модель в AR</a>
+    <a href="presentation.html" class="nav-link active">📊 Презентация: Стол «Пирогов»</a>
+  </div>
+
+  <div class="player-container">
+    <!-- Slide Canvas -->
+    <div class="slide-canvas" id="slide-canvas">
+      <!-- Injected via JS -->
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <button class="btn-ctrl" id="btn-prev" onclick="changeSlide(-1)">◀ Назад</button>
+      <div class="slide-counter" id="slide-counter">Слайд 1 из 10</div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-ctrl" onclick="toggleFullscreen()">⛶ Полный экран</button>
+        <button class="btn-ctrl" id="btn-next" onclick="changeSlide(1)">Вперед ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Задание № 1 • «Интернет-сервисы создания презентаций» • Оборудование Технопарка АлтГПУ • 2026
+  </footer>
+
+  <script>
+    const slides = [
+      // Slide 1: Title
+      {
+        render: () => `
+          <div class="title-slide" style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <div class="title-uni">АЛТАЙСКИЙ ГОСУДАРСТВЕННЫЙ ПЕДАГОГИЧЕСКИЙ УНИВЕРСИТЕТ</div>
+            <div class="title-sub">Институт филологии и межкультурной коммуникации (ИФиМК) • Магистратура</div>
+            <div class="title-main">Оборудование Технопарка АлтГПУ:<br><span style="color:#60a5fa;">Интерактивный анатомический стол «Пирогов»</span></div>
+            <div class="title-meta">
+              Практическое задание № 1: «Интернет-сервисы создания презентаций»<br>
+              Дисциплина: «Электронные образовательные ресурсы, ДО»<br>
+              Преподаватель: к.п.н., доцент Тумбаева Н.В. • Барнаул, 2026
+            </div>
+          </div>
+        `
+      },
+      // Slide 2: Technopark Base
+      {
+        badge: "МТУПК «УЧИТЕЛЬ БУДУЩЕГО ПОКОЛЕНИЯ РОССИИ»",
+        title: "Технопарк универсальных педагогических компетенций АлтГПУ",
+        render: () => `
+          <div class="slide-body">
+            <div class="slide-card" style="flex:1;">
+              <div class="card-title">🏛 О материально-технической базе Технопарка</div>
+              <div class="bullet-item">• Технопарк создан в АлтГПУ в рамках федерального проекта «Современная школа» нацпроекта «Образование».</div>
+              <div class="bullet-item">• Объединяет кластеры: медико-биологический, робототехники, VR/AR моделирования, альтернативной энергетики и 3D-прототипирования.</div>
+              <div class="bullet-item">• Официальный раздел базы: <strong>altspu.ru/about_the_university/technopark/</strong></div>
+              <div class="bullet-item">• Выбранный объект исследования: <strong>Интерактивный анатомический стол «Пирогов»</strong> — ключевой инструмент естественно-научного кластера.</div>
+            </div>
+            <div class="slide-card" style="flex:1; background:#0f172a; color:white; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+              <div style="font-size:36px; margin-bottom:10px;">🔬</div>
+              <div style="font-size:16px; font-weight:700; color:#60a5fa; margin-bottom:6px;">Естественно-научный кластер</div>
+              <div style="font-size:12px; color:#cbd5e1; max-width:320px;">Оснащен новейшим оборудованием отечественной разработки для междисциплинарной подготовки учителей.</div>
+            </div>
+          </div>
+        `
+      },
+      // Slide 3: Passport
+      {
+        badge: "ПАСПОРТ УСТРОЙСТВА",
+        title: "АПК «Пирогов»: Название, производитель и официальный сайт",
+        render: () => `
+          <div class="slide-body">
+            <div class="slide-card" style="flex:1.2;">
+              <div class="card-title">📋 Идентификационные данные оборудования</div>
+              <table class="table-custom">
+                <tr><td><strong>Название</strong></td><td>Интерактивный анатомический стол «Пирогов» (Pirogov Anatomy)</td></tr>
+                <tr><td><strong>Производитель</strong></td><td>ООО «Развитие» (ГК «Open World») / СамГМУ</td></tr>
+                <tr><td><strong>Страна</strong></td><td>Россия (г. Самара). Включен в Единый реестр отечественного ПО</td></tr>
+                <tr><td><strong>Сайт производителя</strong></td><td><a href="https://nash-pirogov.ru/" target="_blank" style="color:#2563eb;">https://nash-pirogov.ru/</a> (а также samsmu.ru)</td></tr>
+                <tr><td><strong>Класс системы</strong></td><td>Программно-аппаратный комплекс 3D интерактивной визуализации</td></tr>
+              </table>
+            </div>
+            <div class="slide-card" style="flex:0.8; background:#eff6ff; border-color:#bfdbfe;">
+              <div class="card-title" style="color:#1e40af;">🌐 Официальный портал</div>
+              <div class="card-text">
+                На официальном сайте <strong>nash-pirogov.ru</strong> представлены модификации («Пирогов I», «Пирогов II», школьный «Биохаб»), руководства по эксплуатации, технические сертификаты и база клинических случаев.
+              </div>
+            </div>
+          </div>
+        `
+      },
+      // Slide 4: Description & Features
+      {
+        badge: "ДИДАКТИЧЕСКИЕ ВОЗМОЖНОСТИ",
+        title: "Функциональное назначение и дидактический потенциал",
+        render: () => `
+          <div class="slide-body" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="slide-card">
+              <div class="card-title">🧬 Послойный 3D-атлас анатомии</div>
+              <div class="card-text">Более 4 000 высокоточных 3D-моделей женского и мужского тел в масштабе 1:1, созданных по реальным срезам КТ и МРТ. Возможность вращения и послойного скрытия систем органов.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">📖 Международная терминология</div>
+              <div class="card-text">Официальные названия по Terminologia Anatomica на 3 языках (русский, латынь, английский) с подробными карточками строения, кровоснабжения и иннервации.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">🔪 «Виртуальный скальпель»</div>
+              <div class="card-text">Интерактивные рассечения в любой плоскости (сагиттальной, фронтальной, аксиальной), наглядное изучение синтопии и скелетотопии без использования влажных биопрепаратов.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">📊 Контроль знаний и тесты</div>
+              <div class="card-text">Встроенный модуль создания авторских заданий педагога: «Слепой тест» (найти структуру на теле), викторины и моментальная выгрузка оценочных ведомостей.</div>
+            </div>
+          </div>
+        `
+      },
+      // Slide 5: Specs
+      {
+        badge: "ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ",
+        title: "Аппаратная спецификация комплекса «Пирогов»",
+        render: () => `
+          <div class="slide-body">
+            <div class="slide-card" style="width:100%;">
+              <table class="table-custom">
+                <tr><th>Параметр</th><th>Техническое значение</th><th>Педагогическое значение</th></tr>
+                <tr><td><strong>Экран</strong></td><td>Диагональ 75–86", 4K UHD (3840×2160), 450 кд/м²</td><td>Детали видны всей учебной группе с расстояния до 5 метров</td></tr>
+                <tr><td><strong>Сенсор</strong></td><td>Инфракрасный, до 40 одновременных касаний</td><td>Одновременная командная работа у стола 4–6 студентов</td></tr>
+                <tr><td><strong>Защита</strong></td><td>Закаленное антибликовое стекло 4 мм (класс 7H)</td><td>Безопасность при эксплуатации учащимися, защита от царапин</td></tr>
+                <tr><td><strong>Стойка</strong></td><td>Электропривод наклона от 0° (стол) до 90° (доска)</td><td>Трансформация из лабораторного стола в аудиторную доску</td></tr>
+                <tr><td><strong>ПК</strong></td><td>Intel Core i7, 32 ГБ ОЗУ, графика NVIDIA RTX</td><td>Плавный рендеринг тяжелых 3D-сцен при 60 FPS</td></tr>
+                <tr><td><strong>Связь</strong></td><td>Wi-Fi, Ethernet 1 Гбит/с, USB 3.0, HDMI In/Out</td><td>Вывод на проектор, флеш-накопители и трансляция в ВКС</td></tr>
+              </table>
+            </div>
+          </div>
+        `
+      },
+      // Slide 6: Instructions
+      {
+        badge: "РУКОВОДСТВО ПОЛЬЗОВАТЕЛЯ",
+        title: "Пошаговая инструкция по эксплуатации устройства",
+        render: () => `
+          <div class="slide-body" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="slide-card">
+              <div class="card-title">1. Запуск системы</div>
+              <div class="card-text">Подключите к заземленной розетке 220 В. Заблокируйте колесные тормоза стойки. Нажмите кнопку питания и дождитесь загрузки ОС и программы.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">2. Выбор дисциплины</div>
+              <div class="card-text">Выберите режим: «Нормальная анатомия», «Топографическая анатомия», «Патология» или «Тестирование». Задайте отображаемый анатомический уровень.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">3. Жестовое управление</div>
+              <div class="card-text">Вращайте модель одним или двумя пальцами, масштабируйте сведением/разведением пальцев. Двойной тап открывает подробную карточку органа.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">4. Виртуальный срез</div>
+              <div class="card-text">Проведите пальцем линию среза в нужной плоскости для получения моментального топографического сечения с подписями структур.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">5. Проведение проверки</div>
+              <div class="card-text">Запустите режим тестирования. Студенты отмечают структуры на модели. Результаты автоматически фиксируются в журнале.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">6. Завершение работы</div>
+              <div class="card-text">Сохраните авторские сцены, выполните штатное завершение работы через меню ОС, отключите тумблер питания и сетевой фильтр.</div>
+            </div>
+          </div>
+        `
+      },
+      // Slide 7: Safety
+      {
+        badge: "БЕЗОПАСНОСТЬ",
+        title: "Техника безопасности при работе с комплексом",
+        render: () => `
+          <div class="slide-body" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="slide-card" style="border-left:4px solid #ef4444;">
+              <div class="card-title" style="color:#ef4444;">⚡ Электробезопасность</div>
+              <div class="card-text">Обязательное заземление розетки 220 В. Запрещается эксплуатация при повреждении изоляции сетевого шнура, запахе гари или попадании жидкости внутрь корпуса.</div>
+            </div>
+            <div class="slide-card" style="border-left:4px solid #f59e0b;">
+              <div class="card-title" style="color:#d97706;">🛡 Защита сенсорного экрана</div>
+              <div class="card-text">Запрещено опираться на стекло локтями или наваливаться весом тела. Категорически запрещено использовать ручки, карандаши и металлические указки (только пальцы или мягкий стилус).</div>
+            </div>
+            <div class="slide-card" style="border-left:4px solid #3b82f6;">
+              <div class="card-title" style="color:#2563eb;">🔄 Правила наклона и перемещения</div>
+              <div class="card-text">Перед изменением угла наклона убедитесь в отсутствии посторонних предметов в зоне механизма. Перемещение по полу — только в горизонтальном положении при выключенном питании.</div>
+            </div>
+            <div class="slide-card" style="border-left:4px solid #10b981;">
+              <div class="card-title" style="color:#059669;">🧹 Санитарный уход и вентиляция</div>
+              <div class="card-text">Очистка стекла — только безворсовой микрофиброй со спреем для оптических экранов (без спирта и абразивов). Зазор от вентиляционных решеток до стены — не менее 15 см.</div>
+            </div>
+          </div>
+        `
+      },
+      // Slide 8: Cloud Presentation Tools
+      {
+        badge: "ОБЛАЧНЫЕ ТЕХНОЛОГИИ",
+        title: "Обзор онлайн-сервисов для создания презентаций",
+        render: () => `
+          <div class="slide-body">
+            <div class="slide-card" style="width:100%;">
+              <table class="table-custom">
+                <tr><th>Сервис</th><th>Преимущества</th><th>Командная работа</th><th>Доступность в РФ</th></tr>
+                <tr><td><strong>Яндекс.Диск (Документы)</strong></td><td>Отечественные серверы, полная поддержка .pptx, автосохранение</td><td>Совместное редактирование в реальном времени</td><td>100% доступность в реестре ПО РФ</td></tr>
+                <tr><td><strong>Google Диск (Slides)</strong></td><td>Огромный каталог шаблонов, простота ссылок на просмотр</td><td>Одновременная работа до 50 участников, комментарии</td><td>Глобальный облачный стандарт</td></tr>
+                <tr><td><strong>Figma / FigJam</strong></td><td>Векторный дизайн, интерактивные прототипы, анимации</td><td>Режим мультиплеера со следованием за курсором спикера</td><td>Бесплатная образовательная лицензия</td></tr>
+                <tr><td><strong>Zoho Show</strong></td><td>Элегантная типографика, анимация переходов, встраивание на сайт</td><td>Встроенный командный чат, согласование слайдов</td><td>Облачный веб-доступ без ограничений</td></tr>
+              </table>
+            </div>
+          </div>
+        `
+      },
+      // Slide 9: Conclusions
+      {
+        badge: "ИТОГИ И ВЫВОДЫ",
+        title: "Педагогическая ценность комплекса в подготовке учителя",
+        render: () => `
+          <div class="slide-body" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+            <div class="slide-card">
+              <div class="card-title">🔬 Междисциплинарность</div>
+              <div class="card-text">Стол «Пирогов» связывает биологию, анатомию, экологию и ИКТ. Будущие педагоги осваивают передовые методы интерактивной подачи естественно-научных знаний.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">💡 Высокая наглядность</div>
+              <div class="card-text">Интерактивные 3D-модели в масштабе 1:1 формируют у школьников устойчивые пространственные представления, превосходя классические плоские рисунки учебников.</div>
+            </div>
+            <div class="slide-card">
+              <div class="card-title">🚀 Цифровые компетенции</div>
+              <div class="card-text">Работа с современным оборудованием и облачными инструментами презентаций готовит студентов к успешной профессиональной деятельности в цифровой школе.</div>
+            </div>
+          </div>
+        `
+      },
+      // Slide 10: Sources
+      {
+        badge: "БИБЛИОГРАФИЯ",
+        title: "Список использованных источников и документации",
+        render: () => `
+          <div class="slide-body">
+            <div class="slide-card" style="width:100%;">
+              <div class="bullet-item">1. Интерактивный анатомический стол «Пирогов» : официальный сайт. – URL: https://nash-pirogov.ru/ (дата обращения: 03.11.2026).</div>
+              <div class="bullet-item">2. Самарский государственный медицинский университет (СамГМУ). Институт инновационного развития : АПК «Пирогов». – URL: https://samsmu.ru/ (дата обращения: 03.11.2026).</div>
+              <div class="bullet-item">3. Технопарк универсальных педагогических компетенций «Учитель будущего поколения России» АлтГПУ : материально-техническая база. – URL: https://www.altspu.ru/about_the_university/technopark/technopark_base/ (дата обращения: 03.11.2026).</div>
+              <div class="bullet-item">4. Студенческий Клуб Цифровых Компетенций Технопарка АлтГПУ. – URL: https://vk.com/club218522991 (дата обращения: 03.11.2026).</div>
+              <div class="bullet-item">5. Руководство по эксплуатации и паспорт изделия. Интерактивный анатомический комплекс «Пирогов» / ООО «Развитие», СамГМУ. – Самара, 2023. – 48 с.</div>
+              <div class="bullet-item">6. Абрамкин, Г. П. Мировые информационные ресурсы : учебно-методическое пособие / Г. П. Абрамкин, Н. В. Тумбаева, Ю. В. Чепрунова. – Барнаул : АлтГПУ, 2020. – 132 с.</div>
+              <div class="bullet-item">7. Тумбаева, Н. В. Цифровые технологии мультимедийного исторического парка в образовательном пространстве современной школы / Н. В. Тумбаева. – Барнаул : АлтГПУ, 2021. – 96 с.</div>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    let currentIdx = 0;
+
+    function renderSlide() {
+      const s = slides[currentIdx];
+      const canvas = document.getElementById('slide-canvas');
+      
+      if (currentIdx === 0) {
+        canvas.style.padding = "0";
+        canvas.innerHTML = s.render();
+      } else {
+        canvas.style.padding = "32px 40px";
+        canvas.innerHTML = `
+          <div class="slide-badge">${s.badge}</div>
+          <div class="slide-title">${s.title}</div>
+          ${s.render()}
+        `;
+      }
+
+      document.getElementById('slide-counter').innerText = `Слайд ${currentIdx + 1} из ${slides.length}`;
+      document.getElementById('btn-prev').disabled = (currentIdx === 0);
+      document.getElementById('btn-next').disabled = (currentIdx === slides.length - 1);
+    }
+
+    function changeSlide(direction) {
+      currentIdx += direction;
+      if (currentIdx < 0) currentIdx = 0;
+      if (currentIdx >= slides.length) currentIdx = slides.length - 1;
+      renderSlide();
+    }
+
+    function toggleFullscreen() {
+      const container = document.querySelector('.player-container');
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(err => alert(`Ошибка: ${err.message}`));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft') {
+        changeSlide(-1);
+      }
+    });
+
+    renderSlide();
+  </script>
+</body>
+</html>
